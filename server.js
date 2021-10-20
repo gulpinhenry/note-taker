@@ -2,6 +2,8 @@ const express = require('express');
 const path = require("path");
 const fs = require('fs');
 const uniqid = require('uniqid'); 
+const util = require('util');
+let writeFileAsync = util.promisify(fs.writeFile);
 
 const PORT = process.env.PORT || 3001;
 const db = require('./db/db.json');
@@ -23,8 +25,8 @@ app.get('/api/notes', (req, res) => res.json(db));
 // add note to db.json
 app.post('/api/notes', (req, res) => {
 
-    // Inform the client that their POST request was received
-    res.json(`${req.method} request received to add a review`);
+    
+    
     let input = JSON.stringify(req.body)
     const {title, text} = req.body;
 
@@ -44,7 +46,7 @@ app.post('/api/notes', (req, res) => {
   
           // Add a new review
           arr.push(objWithID);
-          fs.writeFile(
+          writeFileAsync(
             './db/db.json',
             JSON.stringify(arr, null, 4),
             (err) =>
@@ -56,6 +58,8 @@ app.post('/api/notes', (req, res) => {
       });
     // Log our request to the terminal
     console.info(`${req.method} request received to add a review`);
+    // Inform the client that their POST request was received
+    res.json(`${req.method} request received to add a review`);
   });
 
 //delete notes
