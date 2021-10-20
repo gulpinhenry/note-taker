@@ -1,14 +1,18 @@
 {
   "name": "note-taker",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple web application that can be used to write and save notes. This application will use an Express.js back end and will save and retrieve note data from a JSON file.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Henry Kam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gulpinhenry/note-taker/issues"
+  },
+  "homepage": "https://github.com/gulpinhenry/note-taker",
   "dependencies": {
     "express": "^4.16.4"
   }
