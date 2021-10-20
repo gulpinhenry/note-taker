@@ -32,7 +32,7 @@ const getNotes = () =>
       'Content-Type': 'application/json',
     },
   });
-
+console.log(getNotes);
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -52,7 +52,7 @@ const deleteNote = (id) =>
 
 const renderActiveNote = () => {
   hide(saveNoteBtn);
-
+  console.log(activeNote.id);
   if (activeNote.id) {
     noteTitle.setAttribute('readonly', true);
     noteText.setAttribute('readonly', true);
