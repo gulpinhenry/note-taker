@@ -4,6 +4,7 @@ const fs = require('fs');
 const uniqid = require('uniqid'); 
 const util = require('util');
 let writeFileAsync = util.promisify(fs.writeFile);
+let readFileAsync = util.promisify(fs.readFile);
 
 const PORT = process.env.PORT || 3001;
 const db = require('./db/db.json');
@@ -19,7 +20,7 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/index.htm
 app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, './public/notes.html'))); //loads notes page
 
 // get notes from db.json
-app.get('/api/notes', (req, res) => res.json(db));
+app.get('/api/notes', (req, res) => readFileAsync('db/db.json', 'utf8').then((notes) => res.json([].concat(JSON.parse(notes)))));
 
 
 // add note to db.json
@@ -27,7 +28,7 @@ app.post('/api/notes', (req, res) => {
 
     
     
-    let input = JSON.stringify(req.body)
+    //let input = JSON.stringify(req.body)
     const {title, text} = req.body;
 
     const objWithID = {
@@ -37,7 +38,7 @@ app.post('/api/notes', (req, res) => {
     }
     
     // get the existing notes
-    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+    readFileAsync('./db/db.json', 'utf8', (err, data) => {
         if (err) {
           console.error(err);
         } else {
@@ -46,6 +47,10 @@ app.post('/api/notes', (req, res) => {
   
           // Add a new review
           arr.push(objWithID);
+          arr.forEach(element => {
+              console.log(typeof element);
+              console.log(JSON.stringify(element));
+          });
           writeFileAsync(
             './db/db.json',
             JSON.stringify(arr, null, 4),
@@ -56,6 +61,7 @@ app.post('/api/notes', (req, res) => {
           );
         }
       });
+    console.log(db);
     // Log our request to the terminal
     console.info(`${req.method} request received to add a review`);
     // Inform the client that their POST request was received
