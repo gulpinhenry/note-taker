@@ -26,7 +26,7 @@ A simple web application deployed on Heroku that can be used to write and save n
 
 **See this unique experience in action!**
 
-![README Generator Demo](public/assets/files/demo.gif)
+![Demo](public/assets/files/demo.gif)
 
 
 
