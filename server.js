@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.static("public"));
 
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/index.html'))); //loads home page
 
 app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, './public/notes.html'))); //loads notes page
@@ -25,10 +26,6 @@ app.get('/api/notes', (req, res) => readFileAsync('db/db.json', 'utf8').then((no
 
 // add note to db.json
 app.post('/api/notes', (req, res) => {
-
-    
-    
-    //let input = JSON.stringify(req.body)
     const {title, text} = req.body;
 
     const objWithID = {
@@ -47,10 +44,6 @@ app.post('/api/notes', (req, res) => {
   
           // Add a new review
           arr.push(objWithID);
-          arr.forEach(element => {
-              console.log(typeof element);
-              console.log(JSON.stringify(element));
-          });
           writeFileAsync(
             './db/db.json',
             JSON.stringify(arr, null, 4),
@@ -61,16 +54,37 @@ app.post('/api/notes', (req, res) => {
           );
         }
       });
-    console.log(db);
     // Log our request to the terminal
-    console.info(`${req.method} request received to add a review`);
+    console.info(`${req.method} request received to add a note`);
     // Inform the client that their POST request was received
-    res.json(`${req.method} request received to add a review`);
+    res.json(`${req.method} request received to add a note`);
   });
 
 //delete notes
 app.delete('/api/notes/:id', (req,res)=> {
-    console.log('hi');
+    readFileAsync('db/db.json', 'utf8').then((notes) => {
+        
+        let tempID = req.params.id;
+        let tempArr = [].concat(JSON.parse(notes));
+        for(let i = 0; i<tempArr.length; i++)
+        {
+            if(tempArr[i].id == tempID)
+            {
+                tempArr.splice(i,1);
+            }
+        }
+        writeFileAsync(
+            './db/db.json',
+            JSON.stringify(tempArr, null, 4),
+            (err) =>
+              err
+                ? console.error(err)
+                : console.info('Successfully updated reviews!')
+        );
+    }).catch(err => console.error("error!"));
+    console.info(`${req.method} request received to delete note`);
+    res.json(`${req.method} request received to delete note`);
+    
 });
 
 app.listen(PORT, () =>
