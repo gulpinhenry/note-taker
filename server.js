@@ -1,3 +1,6 @@
+/** Creates a server
+ * @author Henry Kam
+*/
 const express = require('express');
 const path = require("path");
 const fs = require('fs');
@@ -11,20 +14,40 @@ const db = require('./db/db.json');
 
 const app = express();
 
+/**
+ *  middleware to allow inputs to be readable by the machine
+ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
 app.use(express.static("public"));
 
+/**
+ *  GET request that renders the home page when the user goes to the main port
+ *  
+ */
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/index.html'))); 
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, './public/index.html'))); //loads home page
+/**
+ *  GET request that renders the notes user interface when the user reaches the /notes url
+ */
 
-app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, './public/notes.html'))); //loads notes page
+app.get('/notes', (req, res) => res.sendFile(path.join(__dirname, './public/notes.html'))); 
 
-// get notes from db.json
+/**
+ * GET request for a list of notes formatted in JSON files
+ * @param {String} url
+ * @returns {JSON} notes - notes from db.json
+ * 
+ */
 app.get('/api/notes', (req, res) => readFileAsync('db/db.json', 'utf8').then((notes) => res.json([].concat(JSON.parse(notes)))));
 
 
-// add note to db.json
+/**
+ * POST request to append a new note to db.json, add the existing list of notes
+ * @param {String} url
+ * @returns {String} feedback - whether or not the POST request was successful or not
+ * 
+ */
 app.post('/api/notes', (req, res) => {
     const {title, text} = req.body;
 
@@ -60,12 +83,19 @@ app.post('/api/notes', (req, res) => {
     res.json(`${req.method} request received to add a note`);
   });
 
-//delete notes
+/**
+ * DELETE request to delete a note to db.json using an id tag
+ * @param {String} id
+ * @returns {String} feedback - whether or not the DELETE request was successful or not
+ * 
+ */
 app.delete('/api/notes/:id', (req,res)=> {
     readFileAsync('db/db.json', 'utf8').then((notes) => {
         
         let tempID = req.params.id;
+        // create array of JSON objects while reading the file
         let tempArr = [].concat(JSON.parse(notes));
+        // removes object from array if the ids match
         for(let i = 0; i<tempArr.length; i++)
         {
             if(tempArr[i].id == tempID)
@@ -82,11 +112,16 @@ app.delete('/api/notes/:id', (req,res)=> {
                 : console.info('Successfully updated reviews!')
         );
     }).catch(err => console.error("error!"));
+    // return feedback
     console.info(`${req.method} request received to delete note`);
     res.json(`${req.method} request received to delete note`);
     
 });
 
+/**
+ * initializes server
+ * @param {Integer} port number
+ */
 app.listen(PORT, () =>
     console.log(`App listening at http://localhost:${PORT} 🚀`)
 );
